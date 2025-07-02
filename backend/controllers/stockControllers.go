@@ -42,7 +42,7 @@ func AddStock(c *gin.Context) {
 		return
 	}
 
-	stock.UserID = uint(userID)
+	stock.UserID = userIDStr
 
 	if stock.PortfolioID != 0 {
 		var portfolio models.Portfolio

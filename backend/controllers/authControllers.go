@@ -9,36 +9,20 @@ import (
 
 var authService = auth.NewAuthService()
 
-func Login(c *gin.Context) {
-	var req auth.LoginRequest
+func SyncOAuthUser(c *gin.Context) {
+	var req auth.OAuthUserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	resp, err := authService.Login(req)
+	resp, err := authService.SyncOAuthUser(req)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, resp)
-}
-
-func Signup(c *gin.Context) {
-	var req auth.SignupRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	resp, err := authService.Signup(req)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusCreated, resp)
 }
 
 func GetProfile(c *gin.Context) {

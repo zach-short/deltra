@@ -42,7 +42,7 @@ func AddPortfolio(c *gin.Context) {
 		return
 	}
 
-	portfolio.UserID = uint(userID)
+	portfolio.UserID = userIDStr
 
 	if err := config.DB.Create(&portfolio).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create portfolio"})

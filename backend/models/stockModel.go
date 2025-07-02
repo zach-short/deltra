@@ -1,8 +1,8 @@
 package models
 
 type Stock struct {
-	ID          uint `gorm:"primaryKey"`
-	UserID      uint
+	ID          uint      `gorm:"primaryKey"`
+	UserID      string    `gorm:"type:uuid"`
 	PortfolioID uint
 	Symbol      string
 	Basis       float64
