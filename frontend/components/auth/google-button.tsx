@@ -1,5 +1,5 @@
-import { Pressable, View, Image } from "react-native";
-import { ThemedText } from "./ThemedText";
+import { Image } from 'react-native';
+import { Pressable, View, Text } from '../shared';
 
 export default function SignInWithGoogleButton({
   onPress,
@@ -12,28 +12,28 @@ export default function SignInWithGoogleButton({
     <Pressable onPress={onPress} disabled={disabled}>
       <View
         style={{
-          width: "100%",
+          width: '100%',
           height: 44,
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
           borderRadius: 5,
-          backgroundColor: "#fff",
+          backgroundColor: '#fff',
           borderWidth: 1,
-          borderColor: "#ccc",
+          borderColor: '#ccc',
         }}
       >
         <Image
-          source={require("../assets/images/google-icon.png")}
+          source={require('../assets/images/google-icon.png')}
           style={{
             width: 18,
             height: 18,
             marginRight: 6,
           }}
         />
-        <ThemedText type="defaultSemiBold" darkColor="#000">
+        <Text type='defaultSemiBold' darkColor='#000'>
           Continue with Google
-        </ThemedText>
+        </Text>
       </View>
     </Pressable>
   );

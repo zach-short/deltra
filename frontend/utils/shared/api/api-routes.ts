@@ -3,18 +3,25 @@ const API_VERSION = 'v1';
 const USERS = (userId: string) => `${API_VERSION}/users/${userId}`;
 
 const STOCKS_BASE = (userId: string) => `${USERS(userId)}/stocks`;
-const STOCK_BASE = (userId: string, listingId: string) =>
-  `${STOCKS_BASE(userId)}/${listingId}`;
+const STOCK_BASE = (userId: string, stockId: string) =>
+  `${STOCKS_BASE(userId)}/${stockId}`;
+
+const PORTFOLIOS_BASE = (userId: string) => `${USERS(userId)}/portfolios`;
+const PORTFOLIO_BASE = (userId: string, portfolioId: string) =>
+  `${PORTFOLIOS_BASE(userId)}/${portfolioId}`;
 
 export const apiRoutes = {
   version: API_VERSION,
-
   user: {
     base: USERS,
   },
   stocks: {
     base: STOCKS_BASE,
     single: STOCK_BASE,
+  },
+  portfolios: {
+    base: PORTFOLIOS_BASE,
+    single: PORTFOLIO_BASE,
   },
 } as const;
 
