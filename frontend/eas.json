@@ -14,8 +14,7 @@
       "resourceClass": "large"
     },
     "production": {
-      "autoIncrement": true,
-      "resourceClass": "large"
+      "autoIncrement": true
     }
   },
   "submit": {

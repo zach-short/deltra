@@ -13,6 +13,33 @@ import {
   REFRESH_COOKIE_OPTIONS,
 } from '@/constants';
 
+async function createOrFindUser(oauthData: {
+  providerId: string;
+  provider: string;
+  email: string;
+  name: string;
+  picture?: string;
+}) {
+  try {
+    const backendUrl =
+      process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8080';
+    const response = await fetch(`${backendUrl}/v1/auth/oauth`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(oauthData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Backend user creation failed: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to create/find user in backend:', error);
+    throw error;
+  }
+}
+
 export async function POST(request: Request) {
   const body = await request.formData();
   const code = body.get('code') as string;
@@ -52,6 +79,26 @@ export async function POST(request: Request) {
 
   const sub = (userInfo as { sub: string }).sub;
 
+  try {
+    const backendUser = await createOrFindUser({
+      providerId: sub,
+      provider: 'google',
+      email: (userInfo as any).email,
+      name: (userInfo as any).name,
+      picture: (userInfo as any).picture,
+    });
+
+    const backendUserId = backendUser.id;
+    userInfoWithoutExp.id = backendUserId;
+    userInfoWithoutExp.provider = 'google';
+    userInfoWithoutExp.isNewUser = backendUser.isNewUser;
+  } catch (error) {
+    return Response.json(
+      { error: 'Failed to create user account' },
+      { status: 500 },
+    );
+  }
+
   const issuedAt = Math.floor(Date.now() / 1000);
 
   const jti = crypto.randomUUID();
@@ -59,12 +106,12 @@ export async function POST(request: Request) {
   const accessToken = await new jose.SignJWT(userInfoWithoutExp)
     .setProtectedHeader({ alg: 'HS256' })
     .setExpirationTime(JWT_EXPIRATION_TIME)
-    .setSubject(sub)
+    .setSubject(userInfoWithoutExp.id)
     .setIssuedAt(issuedAt)
     .sign(new TextEncoder().encode(JWT_SECRET));
 
   const refreshToken = await new jose.SignJWT({
-    sub,
+    sub: userInfoWithoutExp.id,
     jti,
     type: 'refresh',
     name: (userInfo as any).name,
@@ -73,6 +120,7 @@ export async function POST(request: Request) {
     given_name: (userInfo as any).given_name,
     family_name: (userInfo as any).family_name,
     email_verified: (userInfo as any).email_verified,
+    provider: 'google',
   })
     .setProtectedHeader({ alg: 'HS256' })
     .setExpirationTime(REFRESH_TOKEN_EXPIRY)

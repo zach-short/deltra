@@ -12,7 +12,7 @@ func SetupRoutes(r *gin.Engine) {
 
 	auth := api.Group("/auth")
 	{
-		auth.POST("/oauth/sync", controllers.SyncOAuthUser)
+		auth.POST("/oauth", controllers.CreateOrFindOAuthUser)
 	}
 
 	protected := api.Group("/")

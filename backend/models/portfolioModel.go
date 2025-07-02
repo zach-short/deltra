@@ -1,7 +1,7 @@
 package models
 
 type Portfolio struct {
-	ID     uint   `gorm:"primaryKey"`
+	ID     string `gorm:"type:uuid;primaryKey;default:gen_random_uuid()"`
 	Name   string
 	UserID string `gorm:"type:uuid"`
 	User   User   `gorm:"foreignKey:UserID"`
