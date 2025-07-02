@@ -8,6 +8,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func GetProfile(c *gin.Context) {
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"user_id": userID,
+		"message": "Profile endpoint - implement user lookup",
+	})
+}
+
 func GetUser(c *gin.Context) {
 	var user models.User
 	id := c.Param("id")

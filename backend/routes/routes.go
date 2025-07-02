@@ -15,12 +15,11 @@ func SetupRoutes(r *gin.Engine) {
 		auth.POST("/oauth", controllers.CreateOrFindOAuthUser)
 	}
 
-	protected := api.Group("/")
-	protected.Use(middleware.AuthMiddleware())
+	api.Use(middleware.AuthMiddleware())
 	{
-		protected.GET("/profile", controllers.GetProfile)
+		api.GET("/profile", controllers.GetProfile)
 
-		users := protected.Group("/users")
+		users := api.Group("/users")
 		{
 			users.POST("", controllers.AddUser)
 
