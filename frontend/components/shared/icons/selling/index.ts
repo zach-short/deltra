@@ -1,0 +1,12 @@
+export default * from './calendar-icon';
+export default * from './calendar2-icon';
+export default * from './create-icon';
+export default * from './edit-icon';
+export default * from './grid-layout-icon';
+export default * from './list-layout-icon';
+export default * from './orders-icon';
+export default * from './orders2-icon';
+export default * from './payouts-icon';
+export default * from './performance-icon';
+export default * from './review-feedback-icon';
+export default * from './store-settings-icon';

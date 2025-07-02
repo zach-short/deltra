@@ -1,9 +1,9 @@
-import { ThemedText } from "./ThemedText";
-import { useAuth } from "@/context/auth";
-import { Button, Image, Platform, StyleSheet, View } from "react-native";
-import { useState, useEffect, useRef } from "react";
-import * as jose from "jose";
-import { tokenCache } from "@/utils/cache";
+import { ThemedText } from './ThemedText';
+import { useAuth } from '@/context/auth';
+import { Button, Image, Platform, StyleSheet, View } from 'react-native';
+import { useState, useEffect, useRef } from 'react';
+import * as jose from 'jose';
+import { tokenCache } from '@/utils/cache';
 
 export default function ProfileCard() {
   const { signOut, user } = useAuth();
@@ -13,11 +13,10 @@ export default function ProfileCard() {
   const [refreshTokenExpiration, setRefreshTokenExpiration] = useState<
     string | null
   >(null);
-  const isWeb = Platform.OS === "web";
+  const isWeb = Platform.OS === 'web';
   const accessTokenExpiryRef = useRef<number | null>(null);
   const refreshTokenExpiryRef = useRef<number | null>(null);
 
-  // Helper function to format expiration time as relative time
   const formatExpirationTime = (timestamp: number) => {
     if (!timestamp) return null;
 
@@ -25,7 +24,7 @@ export default function ProfileCard() {
     const secondsRemaining = timestamp - now;
 
     if (secondsRemaining <= 0) {
-      return "expired";
+      return 'expired';
     }
 
     // Convert to appropriate units
@@ -39,22 +38,21 @@ export default function ProfileCard() {
       return `expires in ${hours}h`;
     } else {
       const days = Math.floor(secondsRemaining / 86400);
-      return `expires in ${days} day${days > 1 ? "s" : ""}`;
+      return `expires in ${days} day${days > 1 ? 's' : ''}`;
     }
   };
 
-  // Update expiration display every second
   useEffect(() => {
     const updateExpirationDisplay = () => {
       if (accessTokenExpiryRef.current) {
         setAccessTokenExpiration(
-          formatExpirationTime(accessTokenExpiryRef.current)
+          formatExpirationTime(accessTokenExpiryRef.current),
         );
       }
 
       if (refreshTokenExpiryRef.current) {
         setRefreshTokenExpiration(
-          formatExpirationTime(refreshTokenExpiryRef.current)
+          formatExpirationTime(refreshTokenExpiryRef.current),
         );
       }
     };
@@ -77,7 +75,7 @@ export default function ProfileCard() {
       // For native, we get the tokens from cache and decode them
       else if (!isWeb) {
         // Get access token expiration
-        const storedAccessToken = await tokenCache?.getToken("accessToken");
+        const storedAccessToken = await tokenCache?.getToken('accessToken');
         if (storedAccessToken) {
           try {
             const decoded = jose.decodeJwt(storedAccessToken);
@@ -85,12 +83,12 @@ export default function ProfileCard() {
             accessTokenExpiryRef.current = expTime;
             setAccessTokenExpiration(formatExpirationTime(expTime));
           } catch (e) {
-            console.error("Error decoding access token:", e);
+            console.error('Error decoding access token:', e);
           }
         }
 
         // Get refresh token expiration
-        const storedRefreshToken = await tokenCache?.getToken("refreshToken");
+        const storedRefreshToken = await tokenCache?.getToken('refreshToken');
         if (storedRefreshToken) {
           try {
             const decoded = jose.decodeJwt(storedRefreshToken);
@@ -98,7 +96,7 @@ export default function ProfileCard() {
             refreshTokenExpiryRef.current = expTime;
             setRefreshTokenExpiration(formatExpirationTime(expTime));
           } catch (e) {
-            console.error("Error decoding refresh token:", e);
+            console.error('Error decoding refresh token:', e);
           }
         }
       }
@@ -111,16 +109,16 @@ export default function ProfileCard() {
   return (
     <View
       style={{
-        width: "90%",
+        width: '90%',
         maxWidth: 400,
         gap: 20,
         padding: 20,
         borderRadius: 12,
         borderWidth: StyleSheet.hairlineWidth,
-        borderColor: "gray",
+        borderColor: 'gray',
       }}
     >
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
         <Image
           source={{ uri: user?.picture }}
           style={{
@@ -131,36 +129,36 @@ export default function ProfileCard() {
         />
 
         <View>
-          <ThemedText type="defaultSemiBold" style={{ textAlign: "center" }}>
+          <ThemedText type='defaultSemiBold' style={{ textAlign: 'center' }}>
             {user?.name}
           </ThemedText>
-          <ThemedText style={{ fontSize: 14, color: "gray" }}>
+          <ThemedText style={{ fontSize: 14, color: 'gray' }}>
             {user?.email}
           </ThemedText>
         </View>
       </View>
 
       <View>
-        <ThemedText type="defaultSemiBold" style={{ textAlign: "center" }}>
-          {isWeb ? "Session" : "Access Token"}:
+        <ThemedText type='defaultSemiBold' style={{ textAlign: 'center' }}>
+          {isWeb ? 'Session' : 'Access Token'}:
         </ThemedText>
-        <ThemedText type="defaultSemiBold" style={{ textAlign: "center" }}>
-          {accessTokenExpiration !== null ? accessTokenExpiration : "..."}
+        <ThemedText type='defaultSemiBold' style={{ textAlign: 'center' }}>
+          {accessTokenExpiration !== null ? accessTokenExpiration : '...'}
         </ThemedText>
       </View>
 
       {!isWeb && (
         <View>
-          <ThemedText type="defaultSemiBold" style={{ textAlign: "center" }}>
+          <ThemedText type='defaultSemiBold' style={{ textAlign: 'center' }}>
             Refresh Token:
           </ThemedText>
-          <ThemedText type="defaultSemiBold" style={{ textAlign: "center" }}>
-            {refreshTokenExpiration !== null ? refreshTokenExpiration : "..."}
+          <ThemedText type='defaultSemiBold' style={{ textAlign: 'center' }}>
+            {refreshTokenExpiration !== null ? refreshTokenExpiration : '...'}
           </ThemedText>
         </View>
       )}
 
-      <Button title="Sign Out" onPress={signOut} color={"red"} />
+      <Button title='Sign Out' onPress={signOut} color={'red'} />
     </View>
   );
 }

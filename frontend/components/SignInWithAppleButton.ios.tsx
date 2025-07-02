@@ -1,6 +1,6 @@
-import * as AppleAuthentication from "expo-apple-authentication";
-import { View, StyleSheet, useColorScheme } from "react-native";
-import { useAuth } from "@/context/auth";
+import * as AppleAuthentication from 'expo-apple-authentication';
+import { StyleSheet, useColorScheme } from 'react-native';
+import { useAuth } from '@/context/auth';
 
 export function SignInWithAppleButton() {
   const { signInWithApple } = useAuth();
@@ -10,7 +10,7 @@ export function SignInWithAppleButton() {
     <AppleAuthentication.AppleAuthenticationButton
       buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
       buttonStyle={
-        theme === "dark"
+        theme === 'dark'
           ? AppleAuthentication.AppleAuthenticationButtonStyle.WHITE
           : AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
       }
@@ -23,7 +23,7 @@ export function SignInWithAppleButton() {
 
 const styles = StyleSheet.create({
   button: {
-    width: "100%",
+    width: '100%',
     height: 44,
   },
 });

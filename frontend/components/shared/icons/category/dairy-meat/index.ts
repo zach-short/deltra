@@ -1,0 +1,9 @@
+export default * from './Alternative';
+export default * from './beef-icon';
+export default * from './cheese-icon';
+export default * from './dairy-meat-icon';
+export default * from './eggs-icon';
+export default * from './milks-icon';
+export default * from './pork-icon';
+export default * from './poultry-icon';
+export default * from './seafood-icon';

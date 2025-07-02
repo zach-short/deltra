@@ -1,5 +1,5 @@
 import * as jose from 'jose';
-import { COOKIE_NAME, JWT_SECRET } from '@/utils/constants';
+import { COOKIE_NAME, JWT_SECRET } from '@/constants';
 
 export type AuthUser = {
   id: string;

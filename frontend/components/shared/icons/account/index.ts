@@ -1,0 +1,11 @@
+export default * from './community-standards-icon';
+export default * from './cookie-policy-icon';
+export default * from './credit-card-icon';
+export default * from './following-icon';
+export default * from './notification-settings-icon';
+export default * from './notifications-off-icon';
+export default * from './notifications-on-icon';
+export default * from './privacy-policy-icon';
+export default * from './settings-icon';
+export default * from './smart-farming';
+export default * from './verified-icon';

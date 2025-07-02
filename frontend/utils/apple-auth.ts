@@ -4,7 +4,7 @@ import {
   JWT_EXPIRATION_TIME,
   REFRESH_TOKEN_EXPIRY,
   JWT_SECRET,
-} from '@/utils/constants';
+} from '@/constants';
 
 interface AppleAuthResult {
   accessToken: string;
