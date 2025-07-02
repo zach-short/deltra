@@ -4,18 +4,12 @@ import (
 	"deltra-backend/config"
 	"deltra-backend/models"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 func GetStocks(c *gin.Context) {
-	userIDStr := c.Param("id")
-	userID, err := strconv.ParseUint(userIDStr, 10, 32)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
-		return
-	}
+	userID := c.Param("id")
 
 	var stocks []models.Stock
 	config.DB.Where("user_id = ?", userID).Preload("User").Find(&stocks)
@@ -23,12 +17,7 @@ func GetStocks(c *gin.Context) {
 }
 
 func AddStock(c *gin.Context) {
-	userIDStr := c.Param("id")
-	userID, err := strconv.ParseUint(userIDStr, 10, 32)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
-		return
-	}
+	userID := c.Param("id")
 
 	var user models.User
 	if err := config.DB.First(&user, userID).Error; err != nil {
@@ -42,7 +31,7 @@ func AddStock(c *gin.Context) {
 		return
 	}
 
-	stock.UserID = userIDStr
+	stock.UserID = userID
 
 	if stock.PortfolioID != 0 {
 		var portfolio models.Portfolio
