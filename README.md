@@ -16,17 +16,16 @@ Deltra is a minimal, modern app to help investors track cost basis, covered call
 
 ```
 deltra/
-├── frontend/           # Expo app (mobile + web)
-│   ├── app/           # Screens, components, hooks
+├── frontend/
+│   ├── app/
 │   ├── assets/
 │   └── ...
-├── backend/           # Gin-based API server
+├── backend/
 │   ├── controllers/
 │   ├── models/
 │   ├── config/
 │   └── main.go
-├── .env              # Global config
-└── README.md         # This file
+└── README.md
 ```
 
 ## Getting Started
@@ -43,7 +42,7 @@ deltra/
 #### 1. Clone
 
 ```bash
-git clone https://github.com/youruser/deltra.git
+git clone https://github.com/zach-short/deltra.git
 cd deltra
 ```
 
