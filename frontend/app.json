@@ -1,0 +1,64 @@
+{
+  "expo": {
+    "name": "deltra",
+    "slug": "deltra",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "deltra",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.deltra.app",
+      "usesAppleSignIn": true,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.deltra.app"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "server",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "origin": "https://deltra.expo.app"
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      "expo-secure-store",
+      "expo-apple-authentication"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "owner": "",
+    "extra": {
+      "router": {
+        "origin": "https://deltra.expo.app"
+      },
+      "eas": {
+        "projectId": ""
+      },
+      "expoConfig": {}
+    }
+  }
+}

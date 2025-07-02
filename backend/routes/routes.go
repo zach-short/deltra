@@ -1,0 +1,46 @@
+package routes
+
+import (
+	"deltra-backend/controllers"
+	"deltra-backend/middleware"
+
+	"github.com/gin-gonic/gin"
+)
+
+func SetupRoutes(r *gin.Engine) {
+	api := r.Group("/v1")
+
+	auth := api.Group("/auth")
+	{
+		auth.POST("/login", controllers.Login)
+		auth.POST("/signup", controllers.Signup)
+	}
+
+	protected := api.Group("/")
+	protected.Use(middleware.AuthMiddleware())
+	{
+		protected.GET("/profile", controllers.GetProfile)
+
+		users := protected.Group("/users")
+		{
+			users.POST("", controllers.AddUser)
+
+			user := users.Group("/:id")
+			{
+				user.GET("", controllers.GetUser)
+
+				portfolios := user.Group("/portfolios")
+				{
+					portfolios.GET("", controllers.GetPortfolios)
+					portfolios.POST("", controllers.AddPortfolio)
+				}
+
+				stocks := user.Group("/stocks")
+				{
+					stocks.GET("", controllers.GetStocks)
+					stocks.POST("", controllers.AddStock)
+				}
+			}
+		}
+	}
+}
