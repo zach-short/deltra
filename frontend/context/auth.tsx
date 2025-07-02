@@ -468,7 +468,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signIn = async () => {
-    console.log('signIn');
     try {
       if (!request) {
         console.log('No request');
