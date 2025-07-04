@@ -1,21 +1,24 @@
 import { COOKIE_NAME, JWT_SECRET } from '@/constants';
+import { User } from '@/models';
 import * as jose from 'jose';
 
-export type AuthUser = {
-  id: string;
-  email: string;
-  name: string;
-  picture?: string;
-  given_name?: string;
-  family_name?: string;
-  email_verified?: boolean;
-  provider?: string;
-  exp?: number;
-  cookieExpiration?: number;
-};
+function mapJwtToUser(payload: any): User {
+  return {
+    id: payload.sub || payload.id,
+    email: payload.email,
+    name: payload.name,
+    picture: payload.picture,
+    given_name: payload.given_name,
+    family_name: payload.family_name,
+    email_verified: payload.email_verified,
+    provider: payload.provider,
+    exp: payload.exp,
+    cookieExpiration: payload.cookieExpiration,
+  };
+}
 
 export function withAuth<T extends Response>(
-  handler: (req: Request, user: AuthUser) => Promise<T>,
+  handler: (req: Request, user: User) => Promise<T>,
 ) {
   return async (req: Request): Promise<T | Response> => {
     try {
@@ -62,16 +65,16 @@ export function withAuth<T extends Response>(
         new TextEncoder().encode(jwtSecret),
       );
 
-      return await handler(req, decoded.payload as AuthUser);
+      return await handler(req, mapJwtToUser(decoded.payload));
     } catch (error) {
       if (error instanceof jose.errors.JWTExpired) {
-        console.error('Token expired:', error.reason);
+        console.error(error.reason);
         return Response.json({ error: 'Token expired' }, { status: 401 });
       } else if (error instanceof jose.errors.JWTInvalid) {
-        console.error('Invalid token:', error.message);
+        console.error(error.message);
         return Response.json({ error: 'Invalid token' }, { status: 401 });
       } else {
-        console.error('Auth error:', error);
+        console.error(error);
         return Response.json(
           { error: 'Authentication failed' },
           { status: 500 },

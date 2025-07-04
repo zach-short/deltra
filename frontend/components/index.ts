@@ -1,3 +1,2 @@
 export * from './shared';
-export * from './auth';
-export * from './portfolio-manager';
+export * from './features';

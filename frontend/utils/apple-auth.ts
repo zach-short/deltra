@@ -1,37 +1,10 @@
 import * as jose from 'jose';
-import crypto from 'crypto';
+import { randomUUID, createSHA256Hash } from './crypto-utils';
 import {
   JWT_EXPIRATION_TIME,
   REFRESH_TOKEN_EXPIRY,
   JWT_SECRET,
 } from '@/constants';
-
-async function createOrFindUser(oauthData: {
-  providerId: string;
-  provider: string;
-  email: string;
-  name: string;
-  picture?: string;
-}) {
-  try {
-    const backendUrl =
-      process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8080';
-    const response = await fetch(`${backendUrl}/v1/auth/oauth`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(oauthData),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Backend user creation failed: ${response.statusText}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Failed to create/find user in backend:', error);
-    throw error;
-  }
-}
 
 interface AppleAuthResult {
   accessToken: string;
@@ -62,7 +35,7 @@ export async function verifyAndCreateTokens({
   try {
     const { payload } = await jose.jwtVerify(identityToken, JWKS, {
       issuer: 'https://appleid.apple.com',
-      audience: 'com.beto.expoauthexample',
+      audience: ['com.deltra.app', 'host.exp.Exponent'],
     });
 
     const currentTimestamp = Math.floor(Date.now() / 1000);
@@ -79,10 +52,7 @@ export async function verifyAndCreateTokens({
         throw new Error('Invalid nonce');
       }
     } else {
-      const computedHashedNonce = crypto
-        .createHash('sha256')
-        .update(Buffer.from(rawNonce, 'utf8'))
-        .digest('base64url');
+      const computedHashedNonce = createSHA256Hash(rawNonce);
 
       if (payload.nonce !== computedHashedNonce) {
         throw new Error('Invalid nonce');
@@ -93,54 +63,36 @@ export async function verifyAndCreateTokens({
 
     const sub = (payload as { sub: string }).sub;
 
-    const userName = isFirstSignIn
-      ? `${givenName} ${familyName}`
-      : 'apple-user';
-    const userEmail = isFirstSignIn ? email! : 'example@icloud.com';
-
-    const backendUser = await createOrFindUser({
-      providerId: sub,
-      provider: 'apple',
-      email: userEmail,
-      name: userName,
-    });
-
-    const backendUserId = backendUser.id;
-    userInfoWithoutExp.id = backendUserId;
-    userInfoWithoutExp.provider = 'apple';
-    userInfoWithoutExp.isNewUser = backendUser.isNewUser;
-
     const issuedAt = Math.floor(Date.now() / 1000);
 
-    const jti = crypto.randomUUID();
+    const jti = randomUUID();
 
     const accessToken = await new jose.SignJWT({
       ...userInfoWithoutExp,
-      email: userEmail,
-      name: userName,
+      email: isFirstSignIn ? email : 'example@icloud.com',
+      name: isFirstSignIn ? `${givenName} ${familyName}` : 'apple-user',
       email_verified: (payload as any).email_verified ?? false,
       is_private_email: (payload as any).is_private_email ?? false,
       real_user_status: (payload as any).real_user_status ?? 0,
     })
       .setProtectedHeader({ alg: 'HS256' })
       .setExpirationTime(JWT_EXPIRATION_TIME)
-      .setSubject(backendUserId)
+      .setSubject(sub)
       .setIssuedAt(issuedAt)
       .sign(new TextEncoder().encode(JWT_SECRET));
 
     const refreshToken = await new jose.SignJWT({
-      sub: backendUserId,
+      sub,
       jti,
       type: 'refresh',
-      email: userEmail,
-      name: userName,
+      email: isFirstSignIn ? email : 'example@icloud.com',
+      name: isFirstSignIn ? `${givenName} ${familyName}` : 'apple-user',
       email_verified: (payload as any).email_verified ?? false,
       is_private_email: (payload as any).is_private_email ?? false,
       real_user_status: (payload as any).real_user_status ?? 0,
       nonce_supported: (payload as any).nonce_supported ?? false,
       iss: 'https://appleid.apple.com',
       aud: (payload as any).aud,
-      provider: 'apple',
       ...userInfoWithoutExp,
     })
       .setProtectedHeader({ alg: 'HS256' })
@@ -153,7 +105,6 @@ export async function verifyAndCreateTokens({
       refreshToken,
     };
   } catch (error) {
-    console.error('Token verification failed:', error);
     throw error;
   }
 }

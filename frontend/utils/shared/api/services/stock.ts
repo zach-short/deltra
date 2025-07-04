@@ -1,12 +1,24 @@
 import { apiRoutes } from '@/utils/shared/api';
 
 export const stockEndpoints = {
-  getAll: (userId: string) => apiRoutes.stocks.base(userId),
-  getOne: (userId: string, stockId: string) =>
-    apiRoutes.stocks.single(userId, stockId),
-  create: (userId: string) => apiRoutes.stocks.base(userId),
-  update: (userId: string, stockId: string) =>
-    apiRoutes.stocks.single(userId, stockId),
-  delete: (userId: string, stockId: string) =>
-    apiRoutes.stocks.single(userId, stockId),
+  getAll: (userId: string) => ({
+    url: apiRoutes.stocks.base(userId),
+    method: 'GET' as const,
+  }),
+  getOne: (userId: string, stockId: string) => ({
+    url: apiRoutes.stocks.single(userId, stockId),
+    method: 'GET' as const,
+  }),
+  create: (userId: string) => ({
+    url: apiRoutes.stocks.base(userId),
+    method: 'POST' as const,
+  }),
+  update: (userId: string, stockId: string) => ({
+    url: apiRoutes.stocks.single(userId, stockId),
+    method: 'PATCH' as const,
+  }),
+  delete: (userId: string, stockId: string) => ({
+    url: apiRoutes.stocks.single(userId, stockId),
+    method: 'DELETE' as const,
+  }),
 } as const;

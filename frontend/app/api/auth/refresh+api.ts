@@ -84,7 +84,10 @@ export async function POST(request: Request) {
 
           const issuedAt = Math.floor(Date.now() / 1000);
 
-          const newAccessToken = await new jose.SignJWT({ ...userInfo })
+          const newAccessToken = await new jose.SignJWT({ 
+            ...userInfo,
+            id: userInfo.id || userInfo.sub, // Ensure id field is present
+          })
             .setProtectedHeader({ alg: 'HS256' })
             .setExpirationTime(JWT_EXPIRATION_TIME)
             .setSubject(userInfo.sub as string)
@@ -198,6 +201,7 @@ export async function POST(request: Request) {
 
     const newAccessToken = await new jose.SignJWT({
       ...completeUserInfo,
+      id: completeUserInfo.id || completeUserInfo.sub, // Ensure id field is present
       type: undefined,
     })
       .setProtectedHeader({ alg: 'HS256' })
@@ -208,6 +212,7 @@ export async function POST(request: Request) {
 
     const newRefreshToken = await new jose.SignJWT({
       ...completeUserInfo,
+      id: completeUserInfo.id || completeUserInfo.sub, // Ensure id field is present
       jti,
       type: 'refresh',
     })

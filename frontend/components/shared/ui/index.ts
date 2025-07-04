@@ -1,9 +1,6 @@
 export * from './buttons';
 export * from './data-display';
-export * from './feedback';
 export * from './inputs';
 export * from './layout';
-export * from './media';
-export * from './navigation';
-export * from './overlays';
 export * from './typography';
+

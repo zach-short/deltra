@@ -25,7 +25,7 @@ export type ThemedTextProps = TextProps & {
 export const Text = ({
   lightColor,
   darkColor,
-  font = 'outfitMedium',
+  font = 'interMedium',
   weight,
   type = 'default',
   style,

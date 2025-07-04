@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import * as AppleAuthentication from 'expo-apple-authentication';
-import { AuthUser } from '@/utils/middleware';
+import { User } from '@/models';
 import {
   AuthError,
   AuthRequestConfig,
@@ -14,13 +14,29 @@ import { tokenCache } from '@/utils/cache';
 import { Platform } from 'react-native';
 import { BASE_URL } from '@/constants';
 import * as jose from 'jose';
-import { handleAppleAuthError } from '@/utils/handleAppleError';
 import { randomUUID } from 'expo-crypto';
+import { handleAppleAuthError } from '@/utils';
+import { initializeApiClient } from '@/utils/shared/api/api-client';
+
+function mapJwtToUser(payload: any): User {
+  return {
+    id: payload.sub || payload.id,
+    email: payload.email,
+    name: payload.name,
+    picture: payload.picture,
+    given_name: payload.given_name,
+    family_name: payload.family_name,
+    email_verified: payload.email_verified,
+    provider: payload.provider,
+    exp: payload.exp,
+    cookieExpiration: payload.cookieExpiration,
+  };
+}
 
 WebBrowser.maybeCompleteAuthSession();
 
 const AuthContext = React.createContext({
-  user: null as AuthUser | null,
+  user: null as User | null,
   signIn: () => {},
   signOut: () => {},
   signInWithApple: () => {},
@@ -54,7 +70,7 @@ const appleDiscovery: DiscoveryDocument = {
 };
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = React.useState<AuthUser | null>(null);
+  const [user, setUser] = React.useState<User | null>(null);
   const [accessToken, setAccessToken] = React.useState<string | null>(null);
   const [refreshToken, setRefreshToken] = React.useState<string | null>(null);
   const [request, response, promptAsync] = useAuthRequest(config, discovery);
@@ -67,6 +83,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [error, setError] = React.useState<AuthError | null>(null);
   const isWeb = Platform.OS === 'web';
   const refreshInProgressRef = React.useRef(false);
+
+  React.useEffect(() => {
+    initializeApiClient(
+      () => user?.id || '',
+      () => fetchWithAuth,
+    );
+  }, [user?.id]);
 
   React.useEffect(() => {
     handleResponse();
@@ -88,7 +111,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
           if (sessionResponse.ok) {
             const userData = await sessionResponse.json();
-            setUser(userData as AuthUser);
+            setUser(mapJwtToUser(userData));
           } else {
             console.log('No active web session found');
 
@@ -125,7 +148,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                   setRefreshToken(storedRefreshToken);
                 }
 
-                setUser(decoded as AuthUser);
+                setUser(mapJwtToUser(decoded));
               } else if (storedRefreshToken) {
                 console.log('Access token expired, using refresh token');
                 setRefreshToken(storedRefreshToken);
@@ -203,7 +226,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         if (sessionResponse.ok) {
           const sessionData = await sessionResponse.json();
-          setUser(sessionData as AuthUser);
+          setUser(sessionData as User);
         }
 
         return null;
@@ -240,15 +263,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const newAccessToken = tokens.accessToken;
         const newRefreshToken = tokens.refreshToken;
 
-        console.log(
-          'Received new access token:',
-          newAccessToken ? 'exists' : 'missing',
-        );
-        console.log(
-          'Received new refresh token:',
-          newRefreshToken ? 'exists' : 'missing',
-        );
-
         if (newAccessToken) setAccessToken(newAccessToken);
         if (newRefreshToken) setRefreshToken(newRefreshToken);
 
@@ -267,13 +281,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             (decoded as any).picture;
 
           if (!hasRequiredFields) {
-            console.warn(
-              'Refreshed token is missing some user fields:',
-              decoded,
-            );
           }
 
-          setUser(decoded as AuthUser);
+          setUser(mapJwtToUser(decoded));
         }
 
         return newAccessToken;
@@ -294,15 +304,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
       tokens;
 
-    console.log(
-      'Received initial access token:',
-      newAccessToken ? 'exists' : 'missing',
-    );
-    console.log(
-      'Received initial refresh token:',
-      newRefreshToken ? 'exists' : 'missing',
-    );
-
     if (newAccessToken) setAccessToken(newAccessToken);
     if (newRefreshToken) setRefreshToken(newRefreshToken);
 
@@ -313,7 +314,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (newAccessToken) {
       const decoded = jose.decodeJwt(newAccessToken);
-      setUser(decoded as AuthUser);
+      setUser(decoded as User);
     }
   };
 
@@ -332,7 +333,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           },
           appleDiscovery,
         );
-        console.log('response', response);
         if (isWeb) {
           const sessionResponse = await fetch(`${BASE_URL}/api/auth/session`, {
             method: 'GET',
@@ -341,7 +341,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
           if (sessionResponse.ok) {
             const sessionData = await sessionResponse.json();
-            setUser(sessionData as AuthUser);
+            setUser(mapJwtToUser(sessionData));
           }
         } else {
           await handleNativeTokens({
@@ -398,7 +398,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
             if (sessionResponse.ok) {
               const sessionData = await sessionResponse.json();
-              setUser(sessionData as AuthUser);
+              setUser(mapJwtToUser(sessionData));
             }
           }
         } else {

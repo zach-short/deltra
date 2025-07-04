@@ -103,7 +103,10 @@ export async function POST(request: Request) {
 
   const jti = crypto.randomUUID();
 
-  const accessToken = await new jose.SignJWT(userInfoWithoutExp)
+  const accessToken = await new jose.SignJWT({
+    ...userInfoWithoutExp,
+    id: userInfoWithoutExp.id, // Explicitly include the id field
+  })
     .setProtectedHeader({ alg: 'HS256' })
     .setExpirationTime(JWT_EXPIRATION_TIME)
     .setSubject(userInfoWithoutExp.id)
@@ -112,6 +115,7 @@ export async function POST(request: Request) {
 
   const refreshToken = await new jose.SignJWT({
     sub: userInfoWithoutExp.id,
+    id: userInfoWithoutExp.id, // Explicitly include the id field
     jti,
     type: 'refresh',
     name: (userInfo as any).name,

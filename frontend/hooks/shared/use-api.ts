@@ -20,7 +20,7 @@ interface FetchOptions<T = any> extends ApiOptions<T> {
   enabled?: boolean;
 }
 
-async function makeApiRequest<T = any>(
+export async function makeApiRequest<T = any>(
   method: 'get' | 'post' | 'put' | 'delete' | 'patch',
   endpoint: string,
   body?: any,
@@ -29,7 +29,17 @@ async function makeApiRequest<T = any>(
   requireAuth: boolean = true,
 ): Promise<ApiResponse<T>> {
   try {
-    let url = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    let url: string;
+    if (endpoint.startsWith('/api/')) {
+      url = endpoint;
+    } else {
+      const backendUrl =
+        process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8080';
+      url = endpoint.startsWith('/')
+        ? `${backendUrl}${endpoint}`
+        : `${backendUrl}/${endpoint}`;
+    }
+
     if (queryParams) {
       const searchParams = new URLSearchParams(queryParams);
       url += `?${searchParams.toString()}`;
@@ -107,6 +117,8 @@ export function useFetch<T>(
     onError,
   } = options;
 
+  const processedEndpoint = endpoint.replace('{user_id}', user?.id || '');
+
   const isFetchingRef = useRef(false);
   const initialFetchDoneRef = useRef(false);
 
@@ -140,7 +152,7 @@ export function useFetch<T>(
       try {
         const response = await makeApiRequest<T>(
           method,
-          endpoint,
+          processedEndpoint,
           undefined,
           undefined,
           fetchWithAuth,
@@ -182,7 +194,7 @@ export function useFetch<T>(
       }
     },
     [
-      endpoint,
+      processedEndpoint,
       method,
       user,
       enabled,
@@ -228,6 +240,8 @@ export function useAction<T>(
   const { user, fetchWithAuth } = useAuth();
   const { requireAuth = true, onSuccess, onError } = options;
 
+  const processedEndpoint = endpoint.replace('{user_id}', user?.id || '');
+
   const execute = useCallback(
     async (body?: any, queryParams?: Record<string, string>) => {
       if (requireAuth && !user?.id) {
@@ -241,7 +255,7 @@ export function useAction<T>(
       try {
         const response = await makeApiRequest<T>(
           method,
-          endpoint,
+          processedEndpoint,
           body,
           queryParams,
           fetchWithAuth,
@@ -277,9 +291,16 @@ export function useAction<T>(
         setLoading(false);
       }
     },
-    [endpoint, method, user, requireAuth, fetchWithAuth, onSuccess, onError],
+    [
+      processedEndpoint,
+      method,
+      user,
+      requireAuth,
+      fetchWithAuth,
+      onSuccess,
+      onError,
+    ],
   );
 
   return { execute, loading, error, data };
 }
-

@@ -1,9 +1,0 @@
-export default * from './baked-goods-icon';
-export default * from './breads-icon';
-export default * from './candy-icon';
-export default * from './crafts-icon';
-export default * from './homemade-icon';
-export default * from './homemade-tools-icon';
-export default * from './jelly-icon';
-export default * from './oils-icon';
-export default * from './pasta-icon';

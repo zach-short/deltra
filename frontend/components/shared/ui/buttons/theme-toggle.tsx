@@ -1,6 +1,7 @@
-import { Pressable, Text } from '@/components';
 import { Icon } from '@/components/shared/icons';
 import { useTheme } from '@/context';
+import { Pressable } from './pressable';
+import { Text } from '../typography';
 import { PhoneIcon } from '@/icons';
 
 export function ThemeToggle() {
@@ -14,11 +15,11 @@ export function ThemeToggle() {
   const getIcon = () => {
     switch (themeMode) {
       case 'light':
-        return <Icon icon={PhoneIcon} height={24} width={24} />;
+        return <Icon icon={PhoneIcon} size={24} />;
       case 'dark':
-        return <Icon icon={PhoneIcon} height={24} width={24} />;
+        return <Icon icon={PhoneIcon} size={24} />;
       case 'system':
-        return <Icon icon={PhoneIcon} height={24} width={24} />;
+        return <Icon icon={PhoneIcon} size={24} />;
     }
   };
 

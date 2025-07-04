@@ -1,6 +1,6 @@
 import { useAuth } from '@/context/auth';
 import { LoadingDots, PortfolioManager, View } from '@/components';
-import LoginForm from '@/components/auth';
+import { LoginForm } from '@/components/features/auth';
 
 export default function HomeScreen() {
   const { user, isLoading } = useAuth();

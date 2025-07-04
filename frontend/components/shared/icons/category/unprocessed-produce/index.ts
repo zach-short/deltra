@@ -1,9 +1,0 @@
-export default * from './fruits-icon';
-export default * from './herbs-icon';
-export default * from './honey-icon';
-export default * from './legumes-icon';
-export default * from './mushroom-icon';
-export default * from './nuts-icon';
-export default * from './seeds-icon';
-export default * from './unprocessed-produce-icon';
-export default * from './vegetables-icon';

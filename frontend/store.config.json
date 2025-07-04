@@ -1,0 +1,23 @@
+{
+  "configVersion": 0,
+  "apple": {
+    "info": {
+      "en-US": {
+        "title": "Deltra",
+        "subtitle": "Track Your Wheel Strategy with Clarity",
+        "description": "Deltra is the easiest way to track your stock cost basis, covered calls, and rolling returns all in one place. Built for serious wheelers who want clarity, not clutter.",
+        "keywords": [
+          "options",
+          "covered calls",
+          "cost basis",
+          "wheel strategy",
+          "stocks",
+          "investing"
+        ],
+        "marketingUrl": "https://deltra.expo.app",
+        "supportUrl": "https://deltra.expo.app/support",
+        "privacyPolicyUrl": "https://deltra.expo.app/privacy"
+      }
+    }
+  }
+}

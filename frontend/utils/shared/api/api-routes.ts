@@ -1,6 +1,6 @@
-const API_VERSION = 'v1';
+const ROOT = '/v1';
 
-const USERS = (userId: string) => `${API_VERSION}/users/${userId}`;
+const USERS = (userId: string) => `${ROOT}/users/${userId}`;
 
 const STOCKS_BASE = (userId: string) => `${USERS(userId)}/stocks`;
 const STOCK_BASE = (userId: string, stockId: string) =>
@@ -10,8 +10,14 @@ const PORTFOLIOS_BASE = (userId: string) => `${USERS(userId)}/portfolios`;
 const PORTFOLIO_BASE = (userId: string, portfolioId: string) =>
   `${PORTFOLIOS_BASE(userId)}/${portfolioId}`;
 
+const COVERED_CALLS_BASE = (userId: string) => `${USERS(userId)}/covered-calls`;
+const COVERED_CALL_BASE = (userId: string, callId: string) =>
+  `${COVERED_CALLS_BASE(userId)}/${callId}`;
+const STOCK_COVERED_CALLS_BASE = (userId: string, stockId: string) =>
+  `${STOCK_BASE(userId, stockId)}/covered-calls`;
+
 export const apiRoutes = {
-  version: API_VERSION,
+  version: ROOT,
   user: {
     base: USERS,
   },
@@ -22,6 +28,11 @@ export const apiRoutes = {
   portfolios: {
     base: PORTFOLIOS_BASE,
     single: PORTFOLIO_BASE,
+  },
+  coveredCalls: {
+    base: COVERED_CALLS_BASE,
+    single: COVERED_CALL_BASE,
+    forStock: STOCK_COVERED_CALLS_BASE,
   },
 } as const;
 
