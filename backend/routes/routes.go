@@ -31,12 +31,45 @@ func SetupRoutes(r *gin.Engine) {
 				{
 					portfolios.GET("", controllers.GetPortfolios)
 					portfolios.POST("", controllers.AddPortfolio)
+
+					portfolio := portfolios.Group("/:portfolioId")
+					{
+						portfolio.PATCH("", controllers.UpdatePortfolio)
+						portfolio.DELETE("", controllers.DeletePortfolio)
+					}
 				}
 
 				stocks := user.Group("/stocks")
 				{
 					stocks.GET("", controllers.GetStocks)
 					stocks.POST("", controllers.AddStock)
+
+					stock := stocks.Group("/:stockId")
+					{
+						stock.GET("", controllers.GetStock)
+						stock.PATCH("", controllers.UpdateStock)
+						stock.DELETE("", controllers.DeleteStock)
+
+						stockCalls := stock.Group("/covered-calls")
+						{
+							stockCalls.GET("", controllers.GetStockCoveredCalls)
+							stockCalls.POST("", controllers.CreateStockCoveredCall)
+						}
+					}
+				}
+
+				coveredCalls := user.Group("/covered-calls")
+				{
+					coveredCalls.GET("", controllers.GetCoveredCalls)
+					coveredCalls.POST("", controllers.CreateCoveredCall)
+
+					call := coveredCalls.Group("/:callId")
+					{
+						call.GET("", controllers.GetCoveredCall)
+						call.PATCH("", controllers.UpdateCoveredCall)
+						call.DELETE("", controllers.DeleteCoveredCall)
+						call.POST("/activate", controllers.ActivateCoveredCall)
+					}
 				}
 			}
 		}

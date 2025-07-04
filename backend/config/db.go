@@ -43,7 +43,7 @@ func InitDB() {
 		log.Fatalf("failed %v", err)
 	}
 	log.Println("Running database migrations...")
-	if err := DB.AutoMigrate(&models.User{}, &models.Stock{}, &models.Portfolio{}); err != nil {
+	if err := DB.AutoMigrate(&models.User{}, &models.Stock{}, &models.Portfolio{}, &models.CoveredCall{}); err != nil {
 		log.Fatalf("Failed to migrate database: %v", err)
 	}
 	log.Println("Database migration completed successfully")
