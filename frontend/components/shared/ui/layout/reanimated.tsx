@@ -1,6 +1,6 @@
-import { useThemeColor } from "@/hooks";
-import Reanimated, { type AnimatedProps } from "react-native-reanimated";
-import { type ViewProps } from "react-native";
+import { useThemeColor } from '@/hooks';
+import Main, { type AnimatedProps } from 'react-native-reanimated';
+import { type ViewProps } from 'react-native';
 
 export type ThemedReanimatedViewProps = AnimatedProps<ViewProps> & {
   lightColor?: string;
@@ -13,24 +13,20 @@ const ThemedReanimatedView = ({
   darkColor,
   ...otherProps
 }: ThemedReanimatedViewProps) => {
-  const backgroundColor = useThemeColor("background", {
+  const backgroundColor = useThemeColor('background', {
     light: lightColor,
     dark: darkColor,
   });
 
-  return (
-    <Reanimated.View style={[{ backgroundColor }, style]} {...otherProps} />
-  );
+  return <Main.View style={[{ backgroundColor }, style]} {...otherProps} />;
 };
 
-const ReanimatedAnimated = {
-  ...Reanimated,
+export const Animated = {
+  ...Main,
   View: ThemedReanimatedView,
-} as typeof Reanimated & {
+} as typeof Main & {
   View: typeof ThemedReanimatedView;
 };
-
-export default ReanimatedAnimated;
 
 export {
   useSharedValue,
@@ -51,4 +47,4 @@ export {
   cancelAnimation,
   measure,
   scrollTo,
-} from "react-native-reanimated";
+} from 'react-native-reanimated';

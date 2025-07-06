@@ -17,6 +17,7 @@ import * as jose from 'jose';
 import { randomUUID } from 'expo-crypto';
 import { handleAppleAuthError } from '@/utils';
 import { initializeApiClient } from '@/utils/shared/api/api-client';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function mapJwtToUser(payload: any): User {
   return {
@@ -41,6 +42,7 @@ const AuthContext = React.createContext({
   signOut: () => {},
   signInWithApple: () => {},
   signInWithAppleWebBrowser: () => Promise.resolve(),
+  signInAsGuest: () => Promise.resolve(),
   fetchWithAuth: (url: string, options: RequestInit) =>
     Promise.resolve(new Response()),
   isLoading: false,
@@ -103,6 +105,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const restoreSession = async () => {
       setIsLoading(true);
       try {
+        const guestUser = await AsyncStorage.getItem('guest_user');
+        if (guestUser) {
+          setUser(JSON.parse(guestUser));
+          setIsLoading(false);
+          return;
+        }
+
         if (isWeb) {
           const sessionResponse = await fetch(`${BASE_URL}/api/auth/session`, {
             method: 'GET',
@@ -124,15 +133,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         } else {
           const storedAccessToken = await tokenCache?.getToken('accessToken');
           const storedRefreshToken = await tokenCache?.getToken('refreshToken');
-
-          console.log(
-            'Restoring session - Access token:',
-            storedAccessToken ? 'exists' : 'missing',
-          );
-          console.log(
-            'Restoring session - Refresh token:',
-            storedRefreshToken ? 'exists' : 'missing',
-          );
 
           if (storedAccessToken) {
             try {
@@ -541,7 +541,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const signInAsGuest = async () => {
+    try {
+      const guestUser: User = {
+        id: `guest_${randomUUID()}`,
+        email: '',
+        name: 'Guest User',
+        provider: 'guest',
+      };
+
+      await AsyncStorage.setItem('guest_user', JSON.stringify(guestUser));
+      setUser(guestUser);
+    } catch (error) {
+      console.error('Error creating guest user:', error);
+    }
+  };
+
   const signOut = async () => {
+    await AsyncStorage.removeItem('guest_user');
+
     if (isWeb) {
       try {
         await fetch(`${BASE_URL}/api/auth/logout`, {
@@ -569,6 +587,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         signOut,
         signInWithApple,
         signInWithAppleWebBrowser,
+        signInAsGuest,
         isLoading,
         error,
         fetchWithAuth,

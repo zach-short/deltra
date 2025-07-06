@@ -4,13 +4,15 @@ import {
   StyleSheet,
   TextInputProps,
 } from 'react-native';
-import Animated, {
+import {
+  Animated,
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   interpolate,
-} from 'react-native-reanimated';
-import { View, fonts } from '@/components';
+  View,
+  fonts,
+} from '@/components';
 import { useThemeColor } from '@/hooks';
 
 interface Props extends TextInputProps {

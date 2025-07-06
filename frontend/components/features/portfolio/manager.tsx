@@ -166,8 +166,6 @@ export function PortfolioManager() {
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior='automatic'
       >
-        <View style={styles.header}></View>
-
         <View style={styles.quickActions}>
           <Pressable
             style={[styles.actionButton, styles.primaryAction]}

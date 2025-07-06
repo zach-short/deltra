@@ -1,14 +1,15 @@
 import { View } from '@/components';
 import { useEffect } from 'react';
 import { StyleSheet, ViewStyle } from 'react-native';
-import Animated, {
+import {
+  Animated,
   Easing,
   useAnimatedStyle,
   useSharedValue,
   withDelay,
   withRepeat,
   withTiming,
-} from 'react-native-reanimated';
+} from '@/components';
 
 export const LoadingDots = ({
   size = 10,

@@ -3,9 +3,10 @@ import { StyleSheet } from 'react-native';
 import { View } from '@/components';
 import { SignInWithGoogleButton } from './google-button';
 import { SignInWithAppleButton } from './apple-button';
+import { ContinueAsGuestButton } from './guest-button';
 
 export function LoginForm() {
-  const { signIn, isLoading } = useAuth();
+  const { signIn, signInAsGuest, isLoading } = useAuth();
 
   return (
     <View style={styles.container}>
@@ -13,6 +14,7 @@ export function LoginForm() {
         <View style={styles.buttonContainer}>
           <SignInWithGoogleButton onPress={signIn} disabled={isLoading} />
           <SignInWithAppleButton />
+          <ContinueAsGuestButton onPress={signInAsGuest} disabled={isLoading} />
         </View>
       </View>
     </View>
