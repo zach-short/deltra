@@ -1,3 +1,4 @@
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ReactNode } from 'react';
 import {
   AuthProvider,
@@ -7,7 +8,6 @@ import {
   PortfolioProvider,
   StockProvider,
 } from '@/context';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 let BottomSheetModalProvider: any = null;
 try {
@@ -32,9 +32,7 @@ export function AppProviders({ children }: AppProvidersProps) {
             <PortfolioProvider>
               <CoveredCallProvider>
                 <StockProvider>
-                  <ToastProvider>
-                    {children}
-                  </ToastProvider>
+                  <ToastProvider>{children}</ToastProvider>
                 </StockProvider>
               </CoveredCallProvider>
             </PortfolioProvider>
@@ -44,3 +42,4 @@ export function AppProviders({ children }: AppProvidersProps) {
     </AuthProvider>
   );
 }
+
