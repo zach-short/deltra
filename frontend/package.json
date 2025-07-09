@@ -16,7 +16,7 @@
     "typecheck": "tsc --noEmit",
     "check-all": "bun run typecheck && bun run lint && bun run format:check",
     "fix-all": "bun run format && bun run lint:fix",
-    "deploy": "EXPO_PUBLIC_BASE_URL=https://deltra.expo.app npx expo export --platform web -c && eas deploy --prod"
+    "deploy": "npx expo export --platform web -c && eas deploy --prod"
   },
   "jest": {
     "preset": "jest-expo"
